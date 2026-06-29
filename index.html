@@ -9,7 +9,7 @@
     body {
       height: 100vh;
       overflow: hidden;
-      font-family: Arial, sans-serif;
+      font-family: Arial;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -25,37 +25,45 @@
       backdrop-filter: blur(14px);
       width: 90%;
       max-width: 450px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-      position: relative;
     }
 
     button {
-      padding: 12px 22px;
+      padding: 12px 20px;
       border: none;
-      border-radius: 30px;
+      border-radius: 25px;
       background: white;
       color: #ff1493;
       font-weight: bold;
       cursor: pointer;
-      margin-top: 12px;
+      margin-top: 10px;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     #surprise { display: none; }
 
-    /* LOVE LETTER */
+    #countdown {
+      font-size: 18px;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
     .letter {
       margin-top: 15px;
       text-align: left;
       line-height: 1.6;
-      font-size: 15px;
       opacity: 0;
-      transform: translateY(20px);
-      transition: 1s ease;
+      max-height: 0;
+      overflow: hidden;
+      transition: 2s ease;
     }
 
     .letter.show {
       opacity: 1;
-      transform: translateY(0);
+      max-height: 2000px;
     }
 
     .line {
@@ -67,18 +75,6 @@
       to { opacity: 1; }
     }
 
-    /* FLOATING HEARTS */
-    .heart {
-      position: absolute;
-      font-size: 18px;
-      animation: floatUp 6s linear infinite;
-    }
-
-    @keyframes floatUp {
-      0% { transform: translateY(100vh); opacity: 1; }
-      100% { transform: translateY(-10vh); opacity: 0; }
-    }
-
   </style>
 </head>
 
@@ -86,14 +82,16 @@
 
 <div class="card" id="start">
   <h1>💌 A Special Surprise For You</h1>
-  <p>Something beautiful is waiting for you… ❤️</p>
-  <button onclick="openSurprise()">Open Your Gift 🎁</button>
+  <p>Something beautiful is waiting… ❤️</p>
+  <button id="openBtn" onclick="openSurprise()" disabled>Locked 🔒</button>
+
+  <div id="countdown"></div>
 </div>
 
 <div class="card" id="surprise">
 
   <h1>🎂 Happy Birthday ❤️</h1>
-  <p>Today is all about you 💖</p>
+  <p>Now it’s your moment 💖</p>
 
   <button onclick="revealLetter()">Open Love Letter 💌</button>
 
@@ -106,11 +104,7 @@
 
     <div class="line">Today, I don’t just celebrate your birthday… I celebrate you, your smile that I can’t get out of my head, your voice that feels like comfort and your presence that somehow makes everything feel right.</div>
 
-    <div class="line">If I could, I’d wrap all my feelings for you into one moment so you could feel exactly how much you mean to me. But since I can’t, I’ll just say this... you are deeply special to me in a way I can’t explain without my heart racing a little.</div>
-
-    <div class="line">On your birthday, I hope life is gentle with you, I hope you get everything you dream of and even the things you stopped wishing for. You deserve love that feels safe, happiness that lasts and peace that never leaves you.</div>
-
-    <div class="line">And selfishly… I hope I get to keep being part of your story, even in the smallest ways.</div>
+    <div class="line">If I could, I’d wrap all my feelings for you into one moment so you could feel exactly how much you mean to me.</div>
 
     <div class="line">Happy Birthday, my love ❤️</div>
 
@@ -119,46 +113,54 @@
   </div>
 </div>
 
-<!-- MUSIC -->
-<audio id="music" loop>
-  <!-- Put file name here if you download it -->
-  <source src="everything.mp3" type="audio/mp3">
-</audio>
-
 <script>
 
+/* SET BIRTHDAY TIME (MIDNIGHT LOCAL) */
+let target = new Date();
+target.setDate(target.getDate() + 1);
+target.setHours(0,0,0,0);
+
+/* COUNTDOWN */
+function updateCountdown(){
+  let now = new Date();
+  let diff = target - now;
+
+  if(diff <= 0){
+    document.getElementById("countdown").innerHTML = "🎉 IT’S TIME!";
+    document.getElementById("openBtn").disabled = false;
+    document.getElementById("openBtn").innerText = "Open Gift 🎁";
+    return;
+  }
+
+  let h = Math.floor(diff / (1000*60*60));
+  let m = Math.floor((diff % (1000*60*60)) / (1000*60));
+  let s = Math.floor((diff % (1000*60)) / 1000);
+
+  document.getElementById("countdown").innerHTML =
+    "Unlocks in: " + h + "h " + m + "m " + s + "s";
+}
+
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+/* OPEN SURPRISE */
 function openSurprise(){
+  if(new Date() < target) return; // HARD LOCK
+
   document.getElementById("start").style.display = "none";
   document.getElementById("surprise").style.display = "block";
 }
 
-/* LETTER REVEAL */
+/* LETTER */
 function revealLetter(){
   let letter = document.getElementById("letter");
   letter.classList.add("show");
 
   let lines = document.querySelectorAll(".line");
-
-  lines.forEach((line, i) => {
-    setTimeout(() => {
-      line.style.animation = "fadeIn 1s forwards";
-    }, i * 900);
+  lines.forEach((line,i)=>{
+    setTimeout(()=> line.style.animation = "fadeIn 1s forwards", i*900);
   });
-
-  /* play music */
-  let music = document.getElementById("music");
-  music.play();
 }
-
-/* HEARTS */
-setInterval(() => {
-  let heart = document.createElement("div");
-  heart.className = "heart";
-  heart.innerHTML = "💖";
-  heart.style.left = Math.random() * 100 + "vw";
-  document.body.appendChild(heart);
-  setTimeout(() => heart.remove(), 6000);
-}, 300);
 
 </script>
 
