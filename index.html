@@ -4,51 +4,83 @@
   <title>Happy Birthday ❤️</title>
 
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-      margin: 0;
       height: 100vh;
       overflow: hidden;
-      background: linear-gradient(135deg, #ffb6c1, #ff69b4);
-      font-family: Arial;
+      font-family: Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
-      color: white;
       text-align: center;
+      color: white;
+      background: radial-gradient(circle at top, #ff9a9e, #ff4d94, #6a0572);
     }
 
     .card {
-      background: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.12);
       padding: 25px;
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
-      width: 85%;
-      max-width: 420px;
-      position: relative;
+      border-radius: 25px;
+      backdrop-filter: blur(14px);
+      width: 90%;
+      max-width: 450px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
       z-index: 2;
+      position: relative;
+      animation: pop 1s ease;
     }
 
+    @keyframes pop {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    h1 { font-size: 24px; margin-bottom: 10px; }
+
     button {
-      padding: 12px 20px;
+      padding: 12px 22px;
       border: none;
-      border-radius: 20px;
+      border-radius: 30px;
       background: white;
       color: #ff1493;
       font-weight: bold;
       cursor: pointer;
-      margin-top: 10px;
+      margin-top: 12px;
+      transition: 0.3s;
     }
 
-    #surprise {
-      display: none;
+    button:hover { transform: scale(1.05); }
+
+    #surprise { display: none; }
+
+    /* LETTER BOX */
+    .letter {
+      margin-top: 15px;
+      padding: 18px;
+      border-radius: 15px;
+      background: rgba(255,255,255,0.15);
+      text-align: left;
+      line-height: 1.6;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 2s ease;
+      border-left: 3px solid #fff;
     }
 
-    /* HEARTS */
+    .letter.show {
+      max-height: 1000px;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* FLOATING HEARTS */
     .heart {
       position: absolute;
-      color: white;
       font-size: 18px;
-      animation: floatUp 5s linear infinite;
+      animation: floatUp 6s linear infinite;
     }
 
     @keyframes floatUp {
@@ -56,47 +88,96 @@
       100% { transform: translateY(-10vh); opacity: 0; }
     }
 
-    /* ROSE PETALS */
+    /* PETALS */
     .petal {
       position: absolute;
-      color: #ffdde1;
-      font-size: 18px;
-      animation: fall 6s linear infinite;
+      font-size: 16px;
+      animation: fall 7s linear infinite;
     }
 
     @keyframes fall {
-      0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+      0% { transform: translateY(-10vh) rotate(0deg); }
       100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
     }
 
     #countdown {
-      font-size: 18px;
-      font-weight: bold;
       margin-top: 10px;
+      font-weight: bold;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
     }
   </style>
 </head>
 
 <body>
 
+<canvas id="confetti"></canvas>
+
 <div class="card" id="start">
   <h1>💌 A Special Surprise For You</h1>
-  <p>Keareilemang ❤️</p>
-  <button onclick="openSurprise()">Open Your Gift 🎁</button>
+  <p id="typeText"></p>
+  <button onclick="openSurprise(); launchConfetti();">Open Your Gift 🎁</button>
 </div>
 
 <div class="card" id="surprise">
-  <h1>🎂 Happy Birthday My Love ❤️</h1>
+  <h1>🎂 Happy Birthday ❤️</h1>
   <p>You are my happiness, my peace, my everything 💖</p>
+
+  <button onclick="revealLetter()">Read My Love Letter 💌</button>
+
+  <div class="letter" id="letter">
+
+My Love,<br><br>
+
+Happy Birthday, my heart ❤️<br><br>
+
+I’ve been trying to find the right words, but nothing ever feels enough when it comes to you. You are the kind of person who makes my world softer, warmer, and so much more beautiful just by being in it.<br><br>
+
+Today, I don’t just celebrate your birthday… I celebrate you — your smile that I can’t get out of my head, your voice that feels like comfort, and your presence that somehow makes everything feel right.<br><br>
+
+If I could, I’d wrap all my feelings for you into one moment so you could feel exactly how much you mean to me. But since I can’t, I’ll just say this: you are deeply special to me in a way I can’t explain without my heart racing a little.<br><br>
+
+On your birthday, I hope life is gentle with you. I hope you get everything you dream of, and even the things you stopped wishing for. You deserve love that feels safe, happiness that lasts, and peace that never leaves you.<br><br>
+
+And selfishly… I hope I get to keep being part of your story, even in the smallest ways.<br><br>
+
+Happy Birthday, my love ❤️<br><br>
+
+You’re my favourite thought, today and always.
+
+  </div>
 
   <h3>⏳ Countdown to Midnight</h3>
   <p id="countdown"></p>
 </div>
 
 <script>
+/* TYPE EFFECT */
+const text = "Keareilemang ❤️";
+let i = 0;
+function typeWriter(){
+  if(i < text.length){
+    document.getElementById("typeText").innerHTML += text.charAt(i);
+    i++;
+    setTimeout(typeWriter, 120);
+  }
+}
+typeWriter();
+
+/* OPEN SURPRISE */
 function openSurprise(){
-  document.getElementById("start").style.display="none";
-  document.getElementById("surprise").style.display="block";
+  document.getElementById("start").style.display = "none";
+  document.getElementById("surprise").style.display = "block";
+}
+
+/* REVEAL LETTER */
+function revealLetter(){
+  document.getElementById("letter").classList.add("show");
 }
 
 /* HEARTS */
@@ -106,8 +187,8 @@ setInterval(() => {
   heart.innerHTML = "💖";
   heart.style.left = Math.random() * 100 + "vw";
   document.body.appendChild(heart);
-  setTimeout(() => heart.remove(), 5000);
-}, 300);
+  setTimeout(() => heart.remove(), 6000);
+}, 250);
 
 /* PETALS */
 setInterval(() => {
@@ -116,14 +197,15 @@ setInterval(() => {
   petal.innerHTML = "🌸";
   petal.style.left = Math.random() * 100 + "vw";
   document.body.appendChild(petal);
-  setTimeout(() => petal.remove(), 6000);
-}, 400);
+  setTimeout(() => petal.remove(), 7000);
+}, 350);
 
 /* COUNTDOWN */
 function updateCountdown() {
   let now = new Date();
   let target = new Date();
-  target.setHours(24,0,0,0);
+  target.setDate(target.getDate() + 1);
+  target.setHours(0,0,0,0);
 
   let diff = target - now;
 
@@ -134,9 +216,41 @@ function updateCountdown() {
   document.getElementById("countdown").innerText =
     h + "h " + m + "m " + s + "s";
 }
-
 setInterval(updateCountdown, 1000);
 updateCountdown();
+
+/* CONFETTI */
+const canvas = document.getElementById("confetti");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let pieces = [];
+
+function launchConfetti(){
+  for(let i=0;i<120;i++){
+    pieces.push({
+      x: Math.random()*canvas.width,
+      y: Math.random()*canvas.height - canvas.height,
+      r: Math.random()*6+2,
+      d: Math.random()*10+5,
+      color: `hsl(${Math.random()*360},100%,70%)`
+    });
+  }
+}
+
+function drawConfetti(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  pieces.forEach((p,i)=>{
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fill();
+    p.y += p.d;
+    if(p.y > canvas.height) pieces.splice(i,1);
+  });
+}
+setInterval(drawConfetti, 20);
 </script>
 
 </body>
