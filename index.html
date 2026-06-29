@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Happy Birthday ❤️</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(135deg, #ffb6c1, #ff69b4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial;
+      color: white;
+      text-align: center;
+    }
+
+    .box {
+      background: rgba(255,255,255,0.2);
+      padding: 30px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      width: 80%;
+      max-width: 400px;
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 20px;
+      background: white;
+      color: #ff1493;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    #surprise {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="box" id="start">
+  <h1>💌 A Special Message For You</h1>
+  <p>Click below to open your surprise ❤️</p>
+  <button onclick="openSurprise()">Open 🎁</button>
+</div>
+
+<div class="box" id="surprise">
+  <h1>🎂 Happy Birthday My Love ❤️</h1>
+  <p>You mean everything to me 💖</p>
+</div>
+
+<script>
+function openSurprise(){
+  document.getElementById("start").style.display="none";
+  document.getElementById("surprise").style.display="block";
+}
+</script>
+
+</body>
+</html>
