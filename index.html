@@ -27,6 +27,8 @@
       max-width: 450px;
     }
 
+    #surprise { display: none; }
+
     button {
       padding: 12px 20px;
       border: none;
@@ -36,6 +38,7 @@
       font-weight: bold;
       cursor: pointer;
       margin-top: 10px;
+      transition: 0.3s;
     }
 
     button:disabled {
@@ -43,14 +46,26 @@
       cursor: not-allowed;
     }
 
-    #surprise { display: none; }
-
     #countdown {
       font-size: 18px;
       margin-top: 10px;
       font-weight: bold;
     }
 
+    /* ENVELOPE SHAKE */
+    .shake {
+      animation: shake 0.4s;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      50% { transform: translateX(8px); }
+      75% { transform: translateX(-8px); }
+      100% { transform: translateX(0); }
+    }
+
+    /* LETTER */
     .letter {
       margin-top: 15px;
       text-align: left;
@@ -82,8 +97,9 @@
 
 <div class="card" id="start">
   <h1>💌 A Special Surprise For You</h1>
-  <p>Something beautiful is waiting… ❤️</p>
-  <button id="openBtn" onclick="openSurprise()" disabled>Locked 🔒</button>
+  <p>Locked until your birthday ❤️</p>
+
+  <button id="openBtn" onclick="openSurprise()">🔒 Locked Envelope</button>
 
   <div id="countdown"></div>
 </div>
@@ -104,8 +120,6 @@
 
     <div class="line">Today, I don’t just celebrate your birthday… I celebrate you, your smile that I can’t get out of my head, your voice that feels like comfort and your presence that somehow makes everything feel right.</div>
 
-    <div class="line">If I could, I’d wrap all my feelings for you into one moment so you could feel exactly how much you mean to me.</div>
-
     <div class="line">Happy Birthday, my love ❤️</div>
 
     <div class="line">I always think about you ❤️❤️❤️</div>
@@ -113,22 +127,34 @@
   </div>
 </div>
 
+<!-- HEARTBEAT SOUND -->
+<audio id="heartbeat">
+  <source src="heartbeat.mp3" type="audio/mp3">
+</audio>
+
 <script>
 
-/* SET BIRTHDAY TIME (MIDNIGHT LOCAL) */
 let target = new Date();
 target.setDate(target.getDate() + 1);
 target.setHours(0,0,0,0);
+
+let unlocked = false;
 
 /* COUNTDOWN */
 function updateCountdown(){
   let now = new Date();
   let diff = target - now;
 
+  let btn = document.getElementById("openBtn");
+
   if(diff <= 0){
     document.getElementById("countdown").innerHTML = "🎉 IT’S TIME!";
-    document.getElementById("openBtn").disabled = false;
-    document.getElementById("openBtn").innerText = "Open Gift 🎁";
+    btn.innerText = "Open Gift 🎁";
+    unlocked = true;
+
+    /* PLAY HEARTBEAT */
+    document.getElementById("heartbeat").play();
+
     return;
   }
 
@@ -143,15 +169,27 @@ function updateCountdown(){
 setInterval(updateCountdown, 1000);
 updateCountdown();
 
-/* OPEN SURPRISE */
+/* ENVELOPE CLICK */
 function openSurprise(){
-  if(new Date() < target) return; // HARD LOCK
+
+  let btn = document.getElementById("openBtn");
+
+  if(!unlocked){
+    /* SHAKE ANIMATION */
+    btn.classList.add("shake");
+
+    setTimeout(()=>{
+      btn.classList.remove("shake");
+    }, 400);
+
+    return;
+  }
 
   document.getElementById("start").style.display = "none";
   document.getElementById("surprise").style.display = "block";
 }
 
-/* LETTER */
+/* LETTER REVEAL */
 function revealLetter(){
   let letter = document.getElementById("letter");
   letter.classList.add("show");
